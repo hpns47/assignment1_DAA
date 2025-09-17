@@ -6,7 +6,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ClosestPair2DTest {
+class ClosestPair2DTest{
 
     @Test
     void simpleTriangle() {
