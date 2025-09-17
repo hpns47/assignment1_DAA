@@ -76,4 +76,23 @@ class DeterministicSelectTest {
         assertThrows(IllegalArgumentException.class,
                 () -> DeterministicSelect.select(array, 0));
     }
+
+    @Test
+    void matchesSortedArrayOn100RandomTrials() {
+        Random rnd = new Random(123);
+
+        for (int t = 0; t < 100; t++) {
+            int n = 200;
+            int[] array = rnd.ints(n, -1000, 1000).toArray();
+            int[] sorted = array.clone();
+            Arrays.sort(sorted);
+
+            int k = rnd.nextInt(n);
+            int result = DeterministicSelect.select(array.clone(), k);
+
+            assertEquals(sorted[k], result,
+                    "DeterministicSelect должен совпадать с Arrays.sort");
+        }
+    }
+
 }

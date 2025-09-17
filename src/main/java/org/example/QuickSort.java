@@ -13,8 +13,9 @@ public class QuickSort {
 
     private static void quickSort(int[] array, int leftIndex, int rightIndex) {
         while (leftIndex < rightIndex) {
+            DepthTracker.enter();
             int pivotIndex = partition(array, leftIndex, rightIndex);
-
+            DepthTracker.exit();
             int leftPartitionSize = pivotIndex - leftIndex;
             int rightPartitionSize = rightIndex - pivotIndex;
 

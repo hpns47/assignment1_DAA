@@ -67,4 +67,23 @@ class QuickSortTest {
 
         assertArrayEquals(expected, array, "Большой массив должен сортироваться корректно");
     }
+
+    @Test
+    void recursionDepthIsLogN() {
+        int n = 1 << 15; // 32768 элементов
+        int[] array = new Random(42).ints(n, -1000, 1000).toArray();
+        int[] expected = array.clone();
+        Arrays.sort(expected);
+
+        DepthTracker.reset();
+        QuickSort.sort(array);
+        int maxDepth = DepthTracker.getMaxDepth();
+
+        assertArrayEquals(expected, array, "QuickSort должен сортировать корректно");
+
+        int bound = 2 * (31 - Integer.numberOfLeadingZeros(n));
+        assertTrue(maxDepth <= bound + 10,
+                "Глубина рекурсии должна быть O(log n), но была " + maxDepth);
+    }
+
 }
