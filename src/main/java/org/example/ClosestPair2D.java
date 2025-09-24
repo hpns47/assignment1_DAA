@@ -2,12 +2,12 @@ package org.example;
 
 import java.util.*;
 
-public class ClosestPair2D{
+public class ClosestPair2D {
 
     public record Point(double x, double y) {}
     public record Pair(Point first, Point second, double distance) {}
 
-    public static Pair findClosestPair(List<Point> points) {
+    public static Pair findClosestPair(List<Point> points, Metrics metrics) {
         if (points == null || points.size() < 2) {
             throw new IllegalArgumentException("Need at least 2 points");
         }
@@ -18,17 +18,18 @@ public class ClosestPair2D{
         List<Point> pointsSortedByY = new ArrayList<>(points);
         pointsSortedByY.sort(Comparator.comparingDouble(Point::y));
 
-        return recursiveClosestPair(pointsSortedByX, pointsSortedByY, 0, points.size() - 1);
+        return recursiveClosestPair(pointsSortedByX, pointsSortedByY, 0, points.size() - 1, metrics);
     }
 
     private static Pair recursiveClosestPair(List<Point> pointsSortedByX,
                                              List<Point> pointsSortedByY,
                                              int leftIndex,
-                                             int rightIndex) {
+                                             int rightIndex,
+                                             Metrics metrics) {
         int numberOfPoints = rightIndex - leftIndex + 1;
 
         if (numberOfPoints <= 3) {
-            return bruteForce(pointsSortedByX, leftIndex, rightIndex);
+            return bruteForce(pointsSortedByX, leftIndex, rightIndex, metrics);
         }
 
         int middleIndex = (leftIndex + rightIndex) / 2;
@@ -44,8 +45,8 @@ public class ClosestPair2D{
             }
         }
 
-        Pair leftPair = recursiveClosestPair(pointsSortedByX, leftY, leftIndex, middleIndex);
-        Pair rightPair = recursiveClosestPair(pointsSortedByX, rightY, middleIndex + 1, rightIndex);
+        Pair leftPair = recursiveClosestPair(pointsSortedByX, leftY, leftIndex, middleIndex, metrics);
+        Pair rightPair = recursiveClosestPair(pointsSortedByX, rightY, middleIndex + 1, rightIndex, metrics);
 
         Pair bestPair = leftPair.distance() < rightPair.distance() ? leftPair : rightPair;
         double bestDistance = bestPair.distance();
@@ -59,6 +60,7 @@ public class ClosestPair2D{
 
         for (int i = 0; i < strip.size(); i++) {
             for (int j = i + 1; j < strip.size() && (strip.get(j).y() - strip.get(i).y()) < bestDistance; j++) {
+                metrics.comparisons++;
                 double currentDistance = euclideanDistance(strip.get(i), strip.get(j));
                 if (currentDistance < bestDistance) {
                     bestDistance = currentDistance;
@@ -70,10 +72,11 @@ public class ClosestPair2D{
         return bestPair;
     }
 
-    private static Pair bruteForce(List<Point> points, int leftIndex, int rightIndex) {
+    private static Pair bruteForce(List<Point> points, int leftIndex, int rightIndex, Metrics metrics) {
         Pair bestPair = new Pair(null, null, Double.POSITIVE_INFINITY);
         for (int i = leftIndex; i <= rightIndex; i++) {
             for (int j = i + 1; j <= rightIndex; j++) {
+                metrics.comparisons++;
                 double currentDistance = euclideanDistance(points.get(i), points.get(j));
                 if (currentDistance < bestPair.distance()) {
                     bestPair = new Pair(points.get(i), points.get(j), currentDistance);
