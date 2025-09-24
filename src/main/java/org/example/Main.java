@@ -21,7 +21,6 @@ public class Main {
             long end1 = System.nanoTime();
 
             m1.runtimeNanos = end1 - start1;
-            m1.allocations = 1; // 1 буфер
 
             sink.write("MergeSort", m1, DepthTracker.getMaxDepth());
 
@@ -67,7 +66,6 @@ public class Main {
             long end4 = System.nanoTime();
 
             m4.runtimeNanos = end4 - start4;
-            m4.allocations = 2;
             sink.write("ClosestPair2D", m4, DepthTracker.getMaxDepth());
 
             System.out.println("Results written to results.csv");

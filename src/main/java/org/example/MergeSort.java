@@ -9,31 +9,37 @@ public class MergeSort {
             return;
         }
         int[] buffer = new int[array.length];
+        metrics.allocations++;
         mergeSort(array, buffer, 0, array.length - 1, metrics);
     }
 
     private static void mergeSort(int[] array, int[] buffer, int leftIndex, int rightIndex, Metrics metrics) {
-        int length = rightIndex - leftIndex + 1;
-        if (length <= SMALL_ARRAY_THRESHOLD) {
-            insertionSort(array, leftIndex, rightIndex, metrics);
-            return;
+        DepthTracker.enter();
+        try {
+            int length = rightIndex - leftIndex + 1;
+            if (length <= SMALL_ARRAY_THRESHOLD) {
+                insertionSort(array, leftIndex, rightIndex, metrics);
+                return;
+            }
+
+            if (leftIndex >= rightIndex) {
+                return;
+            }
+
+            int middleIndex = (leftIndex + rightIndex) / 2;
+
+            mergeSort(array, buffer, leftIndex, middleIndex, metrics);
+            mergeSort(array, buffer, middleIndex + 1, rightIndex, metrics);
+
+            metrics.comparisons++;
+            if (array[middleIndex] <= array[middleIndex + 1]) {
+                return;
+            }
+
+            merge(array, buffer, leftIndex, middleIndex, rightIndex, metrics);
+        } finally {
+            DepthTracker.exit();
         }
-
-        if (leftIndex >= rightIndex) {
-            return;
-        }
-
-        int middleIndex = (leftIndex + rightIndex) / 2;
-
-        mergeSort(array, buffer, leftIndex, middleIndex, metrics);
-        mergeSort(array, buffer, middleIndex + 1, rightIndex, metrics);
-
-        metrics.comparisons++;
-        if (array[middleIndex] <= array[middleIndex + 1]) {
-            return;
-        }
-
-        merge(array, buffer, leftIndex, middleIndex, rightIndex, metrics);
     }
 
     private static void merge(int[] array, int[] buffer, int leftIndex, int middleIndex, int rightIndex, Metrics metrics) {

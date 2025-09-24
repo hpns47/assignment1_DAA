@@ -16,25 +16,32 @@ public class DeterministicSelect {
     }
 
     private static int select(int[] array, int leftIndex, int rightIndex, int k, Metrics metrics) {
-        while (true) {
-            if (leftIndex == rightIndex) {
-                return array[leftIndex];
-            }
+        DepthTracker.enter();
+        try{
+            while (true) {
+                if (leftIndex == rightIndex) {
+                    return array[leftIndex];
+                }
 
-            int pivotValue = medianOfMedians(array, leftIndex, rightIndex, metrics);
-            int pivotIndex = partition(array, leftIndex, rightIndex, pivotValue, metrics);
+                int pivotValue = medianOfMedians(array, leftIndex, rightIndex, metrics);
+                int pivotIndex = partition(array, leftIndex, rightIndex, pivotValue, metrics);
 
-            int rank = pivotIndex - leftIndex;
+                int rank = pivotIndex - leftIndex;
 
-            if (k == rank) {
-                return array[pivotIndex];
-            } else if (k < rank) {
-                rightIndex = pivotIndex - 1;
-            } else {
-                k = k - (rank + 1);
-                leftIndex = pivotIndex + 1;
+                if (k == rank) {
+                    return array[pivotIndex];
+                } else if (k < rank) {
+                    rightIndex = pivotIndex - 1;
+                } else {
+                    k = k - (rank + 1);
+                    leftIndex = pivotIndex + 1;
+                }
             }
         }
+        finally{
+            DepthTracker.exit();
+        }
+
     }
 
     private static int medianOfMedians(int[] array, int leftIndex, int rightIndex, Metrics metrics) {
